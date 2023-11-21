@@ -23,7 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'pharmacy_name',
-        'image',    ];
+        'image',
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -43,4 +44,10 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
+
+
+    public function order(): HasMany
+    {
+        return $this->hasMany(order::class) ;
+    }
 }
