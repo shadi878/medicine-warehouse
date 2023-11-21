@@ -18,8 +18,12 @@ class AuthController extends Controller
            'phone_number' => 'required|min:10|unique:users',
            'email' => 'required|email',
            'password' => 'required|min:6',
-           'pharmacy_name' => 'required|unique:users'
+           'pharmacy_name' => 'required|unique:users',
+           'image' => 'required|image|mimes:png,jpg,jpeg|max:2048',
         ]);
+
+        $imageName = time() . '.' . $request['image']->extension();
+        $request['image']->storeAs('images', $imageName);
 
         $user =  User::query()->create([
             'name' => $request['name'],
@@ -27,6 +31,7 @@ class AuthController extends Controller
             'password' => Hash::make( $request['password']),
             'phone_number' => $request['phone_number'],
             'pharmacy_name' => $request['pharmacy_name'],
+            'image' => $imageName ,
         ]);
 
         $token = $user->createToken("Auth Token")->plainTextToken ;

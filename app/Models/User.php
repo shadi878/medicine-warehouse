@@ -23,7 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'pharmacy_name',
-    ];
+        'image',    ];
 
     /**
      * The attributes that should be hidden for serialization.
