@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('pharmacy_name')->unique();
             $table->string('password');
             $table->string('image')->nullable();
+            $table->string('rule');
             $table->rememberToken();
             $table->timestamps();
         });
