@@ -7,6 +7,7 @@ use App\Models\User;
 use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -19,11 +20,11 @@ class AuthController extends Controller
            'email' => 'required|email',
            'password' => 'required|min:6',
            'pharmacy_name' => 'required|unique:users',
-           'image' => 'required|image|mimes:png,jpg,jpeg|max:2048',
+           'image' => 'image|mimes:png,jpg,jpeg|max:2048',
         ]);
-
-        $imageName = time() . '.' . $request['image']->extension();
-        $request['image']->storeAs('images', $imageName);
+         $imageName = '' ;
+        //$imageName = time() . '.' . $request['image']->extension();
+        //$request['image']->storeAs('images', $imageName);
 
         $user =  User::query()->create([
             'name' => $request['name'],

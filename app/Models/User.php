@@ -45,10 +45,4 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
-
-
-    public function order(): HasMany
-    {
-        return $this->hasMany(order::class) ;
-    }
 }
