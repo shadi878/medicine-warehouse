@@ -1,7 +1,6 @@
 <?php
 
-use App\Models\Order;
-use App\Models\User;
+use App\Models\Warehouse;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,11 +20,11 @@ return new class extends Migration
             $table->string('pharmacy_name')->unique();
             $table->string('password');
             $table->string('image')->nullable();
+            $table->string('role')->default('user');
+            $table->foreignIdFor(Warehouse::class)->nullable()->constrained();
             $table->rememberToken();
             $table->timestamps();
         });
-
-
     }
 
     /**

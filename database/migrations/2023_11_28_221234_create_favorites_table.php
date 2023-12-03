@@ -1,6 +1,7 @@
 <?php
 
-use App\Models\Warehouse;
+use App\Models\Medicine;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,10 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('favorites', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->foreignIdFor(Warehouse::class)->constrained();
+            $table->foreignIdFor(User::class)->constrained() ;
+            $table->foreignIdFor(Medicine::class)->constrained() ;
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('favorites');
     }
 };

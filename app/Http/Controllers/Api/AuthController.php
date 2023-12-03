@@ -22,9 +22,10 @@ class AuthController extends Controller
            'pharmacy_name' => 'required|unique:users',
            'image' => 'image|mimes:png,jpg,jpeg|max:2048',
         ]);
-         $imageName = '' ;
-        //$imageName = time() . '.' . $request['image']->extension();
-        //$request['image']->storeAs('images', $imageName);
+
+        $imageName = '' ;
+        $imageName = time() . '.' . $request['image']->extension();
+        $request['image']->storeAs('images', $imageName);
 
         $user =  User::query()->create([
             'name' => $request['name'],
@@ -64,6 +65,14 @@ class AuthController extends Controller
                'data' => [] ,
                'message' => 'the phone number or password is incorrect'
             ] , 422);
+        }
+
+        if($user['role'] == 'admin'){
+            return response()->json([
+                'status' => 0 ,
+                'data' => [] ,
+                'message' => 'welcome sir but you can not login from your mobile please log in from your PC :)',
+            ]);
         }
 
         $token = $user->createToken("Auth Token")->plainTextToken ;

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Category;
 use App\Models\Warehouse;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -13,16 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('medicines', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('scientific_name');
-            $table->string('trade_name');
-            $table->integer('price');
-            $table->string('company');
-            $table->integer('quantity_available')->default(1) ;
-            $table->dateTime('expiration_date');
+            $table->string('name');
+            $table->string('image')->nullable() ;
             $table->foreignIdFor(Warehouse::class)->constrained();
-            $table->foreignIdFor(Category::class)->constrained();
             $table->timestamps();
         });
     }
@@ -32,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('medicines');
+        Schema::dropIfExists('categories');
     }
 };

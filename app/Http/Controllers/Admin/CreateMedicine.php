@@ -3,13 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\medicine;
+use App\Models\Category;
+use App\Models\CategoryItem;
+use App\Models\Medicine;
+use App\Models\Warehouse;
 use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 class CreateMedicine extends Controller
 {
+
+    public function __construct(){
+        $this->middleware('Admin_Role') ;
+    }
     public function create(Request $request) : JsonResponse
     {
         $request->validate([
@@ -19,15 +28,32 @@ class CreateMedicine extends Controller
             'company' => 'required' ,
             'quantity_available' => 'required' ,
             'expiration_date' => 'required' ,
+            'category_id' => 'required|integer' ,
+            'image' => 'image|mimes:png,jpg,jpeg|max:2048',
         ]);
 
-        $medicine = medicine::query()->create([
+        $warehouse = Auth::user()  ;
+        $category_id = Category::query()->find($request['category_id']);
+        $imageName = '' ;
+        $imageName = time() . '.' . $request['image']->extension();
+        $request['image']->storeAs('images', $imageName);
+
+        $medicine = Medicine::query()->create([
            'scientific_name' => $request['scientific_name'] ,
            'trade_name' => $request['trade_name'] ,
            'price' => $request['price'] ,
            'company' => $request['quantity_available'] ,
            'quantity_available' => $request['quantity_available'] ,
            'expiration_date' => $request['expiration_date'] ,
+           'warehouse_id' => $warehouse['warehouse_id'],
+           'category_id' => $category_id['id'],
+            'image' => $imageName ,
+
+        ]);
+
+        $categoryItem = CategoryItem::query()->create([
+            'category_id' => $request['category_id'] ,
+            'medicine_id' => $medicine['id'] ,
         ]);
 
         return response()->json([
@@ -44,7 +70,11 @@ class CreateMedicine extends Controller
             'id' => 'required' ,
         ]);
 
-        medicine::query()->where('id' , '=' , $request['id'])->delete() ;
+        $image  = Medicine::query()->where('id' , '=' ,  $request['id']) ;
+
+        File::delete(public_path('storage/image'.$image['image']));
+
+        Medicine::query()->where('id' , '=' , $request['id'])->delete() ;
 
         return response()->json([
            'status' => 1 ,
@@ -60,11 +90,11 @@ class CreateMedicine extends Controller
             'quantity' => 'required' ,
         ]);
 
-         medicine::query()->where('id','=' ,$request['id'])
+         Medicine::query()->where('id','=' ,$request['id'])
              ->update([
                  'quantity_available' => $request['quantity']
              ]);
-         $newMedicine  = medicine::query()->find($request['id']) ;
+         $newMedicine  = Medicine::query()->find($request['id']) ;
 
         return response()->json([
            'status'  => 1 ,
