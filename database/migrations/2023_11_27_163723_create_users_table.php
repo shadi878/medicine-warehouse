@@ -17,11 +17,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone_number')->unique();
             $table->string('email')->unique();
-            $table->string('pharmacy_name')->unique();
+            $table->string('pharmacy_name')->unique()->nullable();
             $table->string('password');
             $table->string('image')->nullable();
             $table->string('role')->default('user');
-            $table->foreignIdFor(Warehouse::class)->nullable()->constrained();
+            $table->foreignIdFor(Warehouse::class)->nullable()->nullable()->constrained();
             $table->rememberToken();
             $table->timestamps();
         });
