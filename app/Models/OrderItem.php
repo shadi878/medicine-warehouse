@@ -13,6 +13,7 @@ class OrderItem extends Model
     protected $fillable = [
        'quantity' ,
        'price' ,
+        'total_price'
     ] ;
 
     public function order() : BelongsTo{

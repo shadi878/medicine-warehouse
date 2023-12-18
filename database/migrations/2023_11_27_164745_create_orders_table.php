@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->dateTime('order_date');
-            $table->integer('total_amount');
             $table->string('status');
             $table->string('payment_status');
             $table->foreignIdFor(User::class)->constrained();

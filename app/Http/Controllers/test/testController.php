@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\test;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MedicineCollection;
+use App\Models\Favorite;
 use App\Models\Medicine;
+use App\Models\Order;
 use App\Models\User;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
@@ -39,4 +42,21 @@ class testController extends Controller
         return File::delete(public_path('storage/image'.$isExist));
 
     }
-}
+
+    public function test(Request $request)
+    {
+        $user = $request->user();
+        $warehouse = Warehouse::query()->where('name' , '=' , $request['warehouse_name'])->get() ;
+
+        $order = Order::query()->where('user_id' , '=' , $user['id'] )->get() ;
+
+        return $order ;
+    }
+
+    public function collection(Request $request)
+    {
+
+        return new MedicineCollection(Medicine::all()) ;
+    }
+
+    }

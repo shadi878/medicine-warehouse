@@ -22,6 +22,11 @@ class Medicine extends Model
         'category_id',
     ];
 
+    protected $hidden = [
+      'created_at',
+      'updated_at',
+    ];
+
     public function warehouse() : BelongsTo {
         return $this->belongsTo(Warehouse::class);
     }
@@ -30,8 +35,8 @@ class Medicine extends Model
         return $this->belongsTo(Category::class) ;
     }
 
-   public function scopeFilterName(Builder $query , string $name) : Builder{
-        return $query->where('name' , 'LIKE' , '%'.$name.'%') ;
+   public function scopeFilterName(Builder $query , string $text) : Builder{
+        return $query->where('trade_name' , 'LIKE' , '%'.$text.'%') ;
    }
 
    public static function scopeLatestAddition(Builder $query) : Builder

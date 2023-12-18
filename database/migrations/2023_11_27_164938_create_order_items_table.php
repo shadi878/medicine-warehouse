@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('quantity') ;
             $table->double('price') ;
+            $table->double('total_price') ;
             $table->foreignIdFor(Order::class)->constrained();
             $table->foreignIdFor(Medicine::class)->constrained();
             $table->timestamps();

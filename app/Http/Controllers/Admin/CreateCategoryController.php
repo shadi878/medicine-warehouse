@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\CategoryItem;
 use App\Models\Medicine;
 use App\Models\Warehouse;
 use Illuminate\Http\JsonResponse;
@@ -24,14 +23,14 @@ class CreateCategoryController extends Controller
              'name' => 'required' ,
              'image' => 'image|mimes:png,jpg,jpeg|max:2048',
          ]);
-         $warehouse = Auth::user() ;
+         $AdminUser = $request->user() ;
 
         $imageName = time() . '.' . $request['image']->extension();
         $request['image']->storeAs('images', $imageName);
 
         $category =  Category::query()->create([
              'name' => $request['name'],
-             'warehouse_id' => $warehouse['warehouse_id'],
+             'warehouse_id' => $AdminUser['warehouse_id'],
              'image' => $imageName ,
          ]);
 

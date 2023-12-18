@@ -12,17 +12,13 @@ class Favorite extends Model
     use HasFactory;
 
     protected $fillable = [
-       'user_id' ,
-       'medicine_id',
+        'user_id',
+        'medicine_id',
     ];
 
-    public function user() : BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class) ;
+        return $this->belongsTo(User::class);
     }
 
-    public  function medicine() : HasOne
-    {
-        return $this->hasOne(Medicine::class);
-    }
 }

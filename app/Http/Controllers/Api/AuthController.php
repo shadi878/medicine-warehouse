@@ -24,8 +24,8 @@ class AuthController extends Controller
         ]);
 
         $imageName = '' ;
-        $imageName = time() . '.' . $request['image']->extension();
-        $request['image']->storeAs('images', $imageName);
+        //$imageName = time() . '.' . $request['image']->extension();
+        //$request['image']->storeAs('images', $imageName);
 
         $user =  User::query()->create([
             'name' => $request['name'],

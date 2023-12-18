@@ -28,8 +28,8 @@ class ProfileController extends Controller
 
     public function addFavorite(Request $request): JsonResponse
     {
+        $id = $request['medicine_id'] ;
         $user = $request->user();
-        $id = intval($request->route('ID')) ;
         $medicine = Medicine::query()->find($id);
 
         if (!$medicine) {
@@ -37,6 +37,15 @@ class ProfileController extends Controller
                 'status' => 0,
                 'data' => [],
                 'message' => 'invalid',
+            ]);
+        }
+        $favorite = Favorite::query()->where('user_id' , '=' , $user['id'] )
+                                     ->where('medicine_id' , '=' , $id);
+        if($favorite){
+            return response()->json([
+                'status' => 0,
+                'data' => [],
+                'message' => 'it is already in favorite',
             ]);
         }
 
@@ -77,6 +86,40 @@ class ProfileController extends Controller
             'status' => 1,
             'data' => $data,
             'message' => 'all Favorites',
+        ]);
+
+    }
+
+    public function DeleteFavorite(Request $request) : JsonResponse
+    {
+        $request->validate([
+            'medicine_id' => 'required' ,
+        ]);
+        $user = $request->user() ;
+        $medicine = Medicine::query()->find($request['medicine_id']) ;
+        if(!$medicine){
+            return response()->json([
+                'status' => 0,
+                'data' => [],
+                'message' => 'invalid..... :)',
+            ]);
+        }
+        $favorite = Favorite::query()->where('user_id' , '=' , $user['id'])
+                                     ->where('medicine_id' , '=' , $medicine['id']);
+        if(!$favorite){
+            return response()->json([
+                'status' => 0,
+                'data' => [],
+                'message' => 'already not exist..... :)',
+            ]);
+        }
+
+        $favorite->delete();
+
+        return response()->json([
+           'status' => 1 ,
+           'data'  => [] ,
+           'message' => 'deleted successfully' ,
         ]);
 
     }

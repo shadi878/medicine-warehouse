@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\CategoryItem;
 use App\Models\Medicine;
 use App\Models\Warehouse;
 use http\Env\Response;
@@ -34,7 +33,7 @@ class CreateMedicine extends Controller
 
         $warehouse = Auth::user()  ;
         $category_id = Category::query()->find($request['category_id']);
-        $imageName = '' ;
+
         $imageName = time() . '.' . $request['image']->extension();
         $request['image']->storeAs('images', $imageName);
 
@@ -49,11 +48,6 @@ class CreateMedicine extends Controller
            'category_id' => $category_id['id'],
             'image' => $imageName ,
 
-        ]);
-
-        $categoryItem = CategoryItem::query()->create([
-            'category_id' => $request['category_id'] ,
-            'medicine_id' => $medicine['id'] ,
         ]);
 
         return response()->json([
@@ -102,6 +96,28 @@ class CreateMedicine extends Controller
            'message' => 'has been updated successfully ' ,
         ]);
     }
+
+    public function editPrice(Request $request) : JsonResponse
+    {
+        $request->validate([
+            'id' => 'required' ,
+            'price' => 'required' ,
+        ]);
+
+        Medicine::query()->where('id','=' ,$request['id'])
+            ->update([
+                'price' => $request['quantity']
+            ]);
+        $newMedicine  = Medicine::query()->find($request['id']) ;
+
+        return response()->json([
+            'status'  => 1 ,
+            'data' => $newMedicine ,
+            'message' => 'has been updated successfully ' ,
+        ]);
+    }
+
+
 
 
 }

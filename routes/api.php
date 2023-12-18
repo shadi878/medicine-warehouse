@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CreateCategoryController;
 use App\Http\Controllers\Admin\CreateMedicine;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Cart\CartController;
 use App\Http\Controllers\Api\Home\HomeController;
 use App\Http\Controllers\Api\Home\ProfileController;
 use App\Http\Controllers\test\testController;
@@ -29,11 +30,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/register' ,[AuthController::class ,'Register' ]);
 Route::post('/login' ,[AuthController::class ,'Login' ]);
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/getUser' , [ProfileController::class , 'GetUserData']);
     Route::get('/logout' , [AuthController::class , 'logout']) ;
+    Route::post('/search' , [HomeController::class , 'searchForMedicineName']);
     Route::get('/getCategory' , [HomeController::class , 'GetAllCategory']);
     Route::get('/getMedicine' , [HomeController::class , 'GetAllMedicine']) ;
-    Route::get('/addFavorite/{ID}' , [ProfileController::class , 'addFavorite']) ;
+    Route::post('/addFavorite' , [ProfileController::class , 'addFavorite']) ;
     Route::get('/getFavorite' , [ProfileController::class , 'GetFavorite']) ;
+    Route::post('/CreateCart' , [CartController::class , 'CreateCart']);
 
 });
 
@@ -55,4 +59,6 @@ Route::middleware('auth:sanctum')->post('/data' , [testController::class , 'user
 Route::middleware('auth:sanctum')->post('/ware' , [testController::class , 'ware']) ;
 Route::middleware('auth:sanctum')->post('/med' , [testController::class , 'med']) ;
 Route::get('/del' , [testController::class , 'delete']) ;
+Route::middleware('auth:sanctum')->post('/test' , [testController::class , 'test']);
+Route::middleware('auth:sanctum')->get('/collection' , [testController::class , 'collection']);
 
