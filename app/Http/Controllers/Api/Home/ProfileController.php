@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Home;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MedicineCollection;
+use App\Models\Cart;
 use App\Models\Favorite;
 use App\Models\Medicine;
 use Illuminate\Http\JsonResponse;
@@ -19,9 +21,16 @@ class ProfileController extends Controller
     {
         $userData = $request->user();
 
+        $cart = Cart::query()->where('user_id' , '=' , $userData['id'])->first();
+
+        $data = [
+            'user' => $userData ,
+            'cart_id' => $cart['id'] ,
+        ] ;
+
         return response()->json([
             'status' => 1,
-            'data' => $userData,
+            'data' => $data,
             'message' => 'User data',
         ]);
     }
@@ -40,7 +49,7 @@ class ProfileController extends Controller
             ]);
         }
         $favorite = Favorite::query()->where('user_id' , '=' , $user['id'] )
-                                     ->where('medicine_id' , '=' , $id);
+                                     ->where('medicine_id' , '=' , $id)->first();
         if($favorite){
             return response()->json([
                 'status' => 0,
@@ -81,6 +90,8 @@ class ProfileController extends Controller
             $data[$count] = $medicine;
             $count += 1;
         }
+
+        $data = new MedicineCollection($data) ;
 
         return response()->json([
             'status' => 1,

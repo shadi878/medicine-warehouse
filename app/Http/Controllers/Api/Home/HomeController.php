@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Home;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MedicineCollection;
 use App\Models\Category;
 use App\Models\Medicine;
 use App\Models\Warehouse;
@@ -29,8 +30,7 @@ class HomeController extends Controller
 
     public function GetAllMedicine() : JsonResponse
     {
-       $medicine = Medicine::all() ;
-
+       $medicine = new MedicineCollection(Medicine::all())  ;
        return response()->json([
           'status' => 1 ,
           'data' => $medicine ,
@@ -42,11 +42,12 @@ class HomeController extends Controller
     public function searchForMedicineName(Request $request) : JsonResponse
     {
         $text = $request['text'] ;
-         $medicines = Medicine::query()->where('trade_name' , 'LIKE' , '%'.$text.'%')->get( ) ; ;
+        $medicines = Medicine::query()->where('trade_name' , 'LIKE' , '%'.$text.'%')->get() ;
+        $data = new MedicineCollection($medicines) ;
 
          return response()->json([
             'status' => 1 ,
-            'data' => $medicines ,
+            'data' => $data ,
             'message' => 'result'  ,
          ]);
     }
@@ -63,10 +64,10 @@ class HomeController extends Controller
             ]);
         }
         $categoryItems = Medicine::query()->where('category_id' , '=' , $category['id']);
-
+        $data = new MedicineCollection($categoryItems) ;
         return response()->json([
            'status' => 1 ,
-           'data' => $categoryItems ,
+           'data' => $data ,
            'message' => 'all category items' ,
         ]);
     }
@@ -91,15 +92,5 @@ class HomeController extends Controller
            'message' => 'all category' ,
         ]);
     }
-
-
-
-
-
-
-
-
-
-
 
 }

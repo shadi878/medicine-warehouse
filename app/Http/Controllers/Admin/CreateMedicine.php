@@ -28,6 +28,7 @@ class CreateMedicine extends Controller
             'quantity_available' => 'required' ,
             'expiration_date' => 'required' ,
             'category_id' => 'required|integer' ,
+            'quantity_for_sale' => 'required' ,
             'image' => 'image|mimes:png,jpg,jpeg|max:2048',
         ]);
 
@@ -46,6 +47,7 @@ class CreateMedicine extends Controller
            'expiration_date' => $request['expiration_date'] ,
            'warehouse_id' => $warehouse['warehouse_id'],
            'category_id' => $category_id['id'],
+           'quantity_for_sale' => $request['quantity_for_sale'],  
             'image' => $imageName ,
 
         ]);

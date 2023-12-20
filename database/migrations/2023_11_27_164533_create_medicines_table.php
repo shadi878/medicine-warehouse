@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('price');
             $table->string('company');
             $table->integer('quantity_available')->default(1) ;
+            $table->integer('quantity_for_sale')->default(10) ;
             $table->dateTime('expiration_date');
             $table->string('image')->nullable() ;
             $table->boolean('sold_out')->nullable() ;

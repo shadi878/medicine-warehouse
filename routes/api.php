@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getMedicine' , [HomeController::class , 'GetAllMedicine']) ;
     Route::post('/addFavorite' , [ProfileController::class , 'addFavorite']) ;
     Route::get('/getFavorite' , [ProfileController::class , 'GetFavorite']) ;
+    Route::post('/deleteFavorite' , [ProfileController::class , 'DeleteFavorite']) ;
     Route::post('/CreateCart' , [CartController::class , 'CreateCart']);
 
 });
@@ -59,6 +60,7 @@ Route::middleware('auth:sanctum')->post('/data' , [testController::class , 'user
 Route::middleware('auth:sanctum')->post('/ware' , [testController::class , 'ware']) ;
 Route::middleware('auth:sanctum')->post('/med' , [testController::class , 'med']) ;
 Route::get('/del' , [testController::class , 'delete']) ;
+Route::get('/print' , [testController::class , 'print']) ;
 Route::middleware('auth:sanctum')->post('/test' , [testController::class , 'test']);
 Route::middleware('auth:sanctum')->get('/collection' , [testController::class , 'collection']);
 

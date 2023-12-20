@@ -59,4 +59,14 @@ class testController extends Controller
         return new MedicineCollection(Medicine::all()) ;
     }
 
+      private array $data = [1 , 2 , 3];
+      public function print(): string
+      {
+          $id = 5 ;
+          if(in_array($id , $this->data)){
+              return "fuck" ;
+          }
+          return "fuck you" ;
+
+      }
     }

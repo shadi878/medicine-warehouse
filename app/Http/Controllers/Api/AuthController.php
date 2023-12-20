@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use App\Models\User;
 use http\Env\Response;
 use Illuminate\Http\JsonResponse;
@@ -42,6 +43,10 @@ class AuthController extends Controller
             'user' => $user ,
             'token' => $token ,
         ] ;
+
+        $cart = Cart::query()->create([
+           'user_id' =>  $user['id'] ,
+        ]);
 
         return response()->json([
             'status' => 1,

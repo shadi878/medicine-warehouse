@@ -35,9 +35,10 @@ class Medicine extends Model
         return $this->belongsTo(Category::class) ;
     }
 
-   public function scopeFilterName(Builder $query , string $text) : Builder{
+    public static function scopeTitle(Builder $query , string $text):Builder
+    {
         return $query->where('trade_name' , 'LIKE' , '%'.$text.'%') ;
-   }
+    }
 
    public static function scopeLatestAddition(Builder $query) : Builder
    {

@@ -16,6 +16,8 @@ class Order extends Model
         'total_amount',
         'status',
         'payment_status',
+        'warehouse_id',
+        'user_id',
     ] ;
 
     public function orderItem() : HasMany {
