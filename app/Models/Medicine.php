@@ -20,6 +20,7 @@ class Medicine extends Model
         'expiration_date',
         'warehouse_id',
         'category_id',
+        'sold_out',
     ];
 
     protected $hidden = [

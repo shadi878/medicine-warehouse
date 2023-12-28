@@ -69,4 +69,12 @@ class testController extends Controller
           return "fuck you" ;
 
       }
+
+
+      public function GetImage(){
+          $image = '1700553305.jpg' ;
+          $imagePath = asset('images/' . $image);
+          return response()->json(['image_url' => $imagePath]);
+      }
+
     }

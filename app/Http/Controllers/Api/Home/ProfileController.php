@@ -7,13 +7,14 @@ use App\Http\Resources\MedicineCollection;
 use App\Models\Cart;
 use App\Models\Favorite;
 use App\Models\Medicine;
+use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
-
+    use HttpResponses;
     public function __construct(){
         $this->middleware('User_Role') ;
     }
@@ -21,41 +22,33 @@ class ProfileController extends Controller
     {
         $userData = $request->user();
 
-        $cart = Cart::query()->where('user_id' , '=' , $userData['id'])->first();
+        //$cart = Cart::query()->where('user_id' , '=' , $userData['id'])->first();
 
         $data = [
             'user' => $userData ,
-            'cart_id' => $cart['id'] ,
+//            'cart_id' => $cart['id'] ,
         ] ;
 
-        return response()->json([
-            'status' => 1,
-            'data' => $data,
-            'message' => 'User data',
-        ]);
+        $message = 'profile data' ;
+        return $this->success($data  ,$message ) ;
     }
 
     public function addFavorite(Request $request): JsonResponse
     {
         $id = $request['medicine_id'] ;
         $user = $request->user();
-        $medicine = Medicine::query()->find($id);
+        $medicine = Medicine::query()->findOrFail($id);
 
         if (!$medicine) {
-            return response()->json([
-                'status' => 0,
-                'data' => [],
-                'message' => 'invalid',
-            ]);
+            $message = 'invalid' ;
+            return $this->error([] , $message , 404) ;
         }
         $favorite = Favorite::query()->where('user_id' , '=' , $user['id'] )
                                      ->where('medicine_id' , '=' , $id)->first();
         if($favorite){
-            return response()->json([
-                'status' => 0,
-                'data' => [],
-                'message' => 'it is already in favorite',
-            ]);
+            $favorite->delete();
+            $message = 'has been deleted successfully' ;
+            return $this->success([] , $message) ;
         }
 
         Favorite::query()->create([
@@ -63,76 +56,54 @@ class ProfileController extends Controller
             'medicine_id' => $id,
         ]);
 
-        return response()->json([
-            'status' => 1,
-            'data' => [],
-            'message' => 'add successfully',
-        ]);
+        $message = 'add successfully' ;
+        return $this->success([] ,$message) ;
     }
 
     public function GetFavorite(Request $request): JsonResponse
     {
         $data = [];
         $user = $request->user();
-        $favorites = Favorite::query()->where('user_id', '=', $user['id'])->get();
+        $favorites = Favorite::query()->where('user_id' , '=' , $user['id']);
 
-        if (!$favorites) {
-            return response()->json([
-                'status' => 0,
-                'data' => [],
-                'message' => 'you do not have any Favorites items :)',
-            ]);
+        if (!$favorites->exists()) {
+            $message = 'you do not have any Favorites items' ;
+            return $this->error([] , $message , 404) ;
         }
+        $favorites = Favorite::query()->where('user_id' , '=' , $user['id'])->get();
 
         $count = 0 ;
         foreach ($favorites as $favorite) {
-            $medicine = Medicine::query()->find($favorite['medicine_id']);
+            $medicine = Medicine::query()->where('id','=',$favorite['medicine_id'])->first();
             $data[$count] = $medicine;
-            $count += 1;
+            $count++;
         }
 
         $data = new MedicineCollection($data) ;
-
-        return response()->json([
-            'status' => 1,
-            'data' => $data,
-            'message' => 'all Favorites',
-        ]);
+        $message = 'all Favorite' ;
+        return $this->success($data ,$message) ;
 
     }
 
-    public function DeleteFavorite(Request $request) : JsonResponse
-    {
-        $request->validate([
-            'medicine_id' => 'required' ,
-        ]);
-        $user = $request->user() ;
-        $medicine = Medicine::query()->find($request['medicine_id']) ;
-        if(!$medicine){
-            return response()->json([
-                'status' => 0,
-                'data' => [],
-                'message' => 'invalid..... :)',
-            ]);
-        }
-        $favorite = Favorite::query()->where('user_id' , '=' , $user['id'])
-                                     ->where('medicine_id' , '=' , $medicine['id']);
-        if(!$favorite){
-            return response()->json([
-                'status' => 0,
-                'data' => [],
-                'message' => 'already not exist..... :)',
-            ]);
-        }
-
-        $favorite->delete();
-
-        return response()->json([
-           'status' => 1 ,
-           'data'  => [] ,
-           'message' => 'deleted successfully' ,
-        ]);
-
-    }
+//    public function DeleteFavorite(Request $request) : JsonResponse
+//    {
+//        $id = $request->route('ID') ;
+//        $user = $request->user() ;
+//        $medicine = Medicine::query()->where( 'id' ,'=' , $id)->first() ;
+//        if(!$medicine){
+//            $message = 'invalid .. :)' ;
+//            return $this->error([] , $message , 404);
+//        }
+//        $favorite = Favorite::query()->where('user_id' , '=' , $user['id'])->where('medicine_id' , '=' , $medicine['id'])->first();
+//        if(!$favorite){
+//            $message = 'it is already not exist' ;
+//            return $this->error([] , $message , 404) ;
+//        }
+//
+//        $favorite->delete();
+//        $message = 'has been deleted successfully' ;
+//        return $this->success([] , $message) ;
+//
+//    }
 }
 

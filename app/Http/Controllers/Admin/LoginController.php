@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
+    use HttpResponses ;
     public function Login(Request $request) : JsonResponse{
 
         $request->validate([
@@ -28,12 +30,7 @@ class LoginController extends Controller
         }
 
         if($user['role'] == 'user'){
-            return response()->json([
-                'status' => 0 ,
-                'data' => [] ,
-                'message' => 'sorry but you do not have access :)',
-            ]);
-
+            return $this->error([] , 'sorry but you do not have access :)' , 400) ;
         }
 
         $token = $user->createToken("Auth Token")->plainTextToken ;
@@ -43,21 +40,13 @@ class LoginController extends Controller
             'token' => $token ,
         ];
 
-        return response()->json([
-            'status' => 1 ,
-            'data' => $data ,
-            'message' => 'welcome, logged in successfully',
-        ]);
+        return $this->success($data , 'logged in successfully');
     }
 
     public function Logout() : JsonResponse{
 
         Auth::user()->currentAccessToken()->delete() ;
-        return response()->json([
-            'status' => 1 ,
-            'data' => [] ,
-            'message' => 'logged out successfully' ,
-        ]);
+        return $this->success([] , 'logged out successfully') ;
 
     }
 }

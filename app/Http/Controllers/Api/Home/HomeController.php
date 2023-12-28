@@ -7,12 +7,13 @@ use App\Http\Resources\MedicineCollection;
 use App\Models\Category;
 use App\Models\Medicine;
 use App\Models\Warehouse;
-use http\Env\Response;
+use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
+    use HttpResponses ;
     public function __construct(){
         $this->middleware('User_Role') ;
     }
@@ -27,6 +28,19 @@ class HomeController extends Controller
         ]);
 
     }
+    public function GetCategoryItem(Request $request) : JsonResponse
+    {
+        $id = $request->route('id') ;
+        $medicines = Medicine::query()->where('category_id' , '=' , $id)->get() ;
+        if(count($medicines) == 0){
+            $message = 'there is no item' ;
+            return $this->error([] , $message , 404) ;
+        }
+        $message = 'all category item' ;
+        $data = new MedicineCollection($medicines);
+        return $this->success($data , $message);
+    }
+
 
     public function GetAllMedicine() : JsonResponse
     {

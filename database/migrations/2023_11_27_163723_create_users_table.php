@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('image')->nullable();
             $table->string('role')->default('user');
-            $table->foreignIdFor(Warehouse::class)->nullable()->nullable()->constrained();
+            $table->foreignIdFor(Warehouse::class)->nullable()->constrained();
             $table->rememberToken();
             $table->timestamps();
         });

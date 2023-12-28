@@ -13,12 +13,16 @@ class Order extends Model
 
     protected $fillable = [
         'order_date',
-        'total_amount',
         'status',
         'payment_status',
         'warehouse_id',
         'user_id',
     ] ;
+
+    protected $hidden = [
+      'created_at',
+      'updated_at',
+    ];
 
     public function orderItem() : HasMany {
         return $this->hasMany(OrderItem::class) ;
