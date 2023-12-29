@@ -42,6 +42,7 @@ class CreateMedicine extends Controller
 //        $imageName = time() . '.' . $request['image']->extension();
 //        $request['image']->storeAs('images', $imageName);
 
+
         $medicine = Medicine::query()->create([
            'scientific_name' => $request['scientific_name'] ,
            'trade_name' => $request['trade_name'] ,
@@ -52,7 +53,7 @@ class CreateMedicine extends Controller
            'warehouse_id' => $admin['warehouse_id'],
            'category_id' => $category['id'],
            'quantity_for_sale' => $request['quantity_for_sale'],
-            'image' => 'new_test.png' ,
+            'image' => null ,
 
         ]);
 
@@ -139,6 +140,31 @@ class CreateMedicine extends Controller
         $message = 'all medicine';
         return $this->success($data , $message);
 
+    }
+
+
+    public function searchForMedicineCategoryName(Request $request) : JsonResponse
+    {
+        $admin = $request->user();
+        $text = $request['text'] ;
+
+        $medicines = Medicine::query()->where('warehouse_id' , '=' , $admin['warehouse_id']);
+        $medicines = $medicines->where('trade_name' , 'LIKE' , '%'.$text.'%')->get();
+
+        $category = Category::query()->where('warehouse_id' , '=' , $admin['warehouse_id']);
+        $category = $category->where('name' , 'LIKE' , '%'.$text.'%')->get();
+
+        $med = new MedicineCollection($medicines) ;
+        $data = [
+            'medicine' => $med ,
+            'category' => $category,
+        ];
+
+        return response()->json([
+            'status' => 1 ,
+            'data' => $data ,
+            'message' => 'result'  ,
+        ]);
     }
 
 

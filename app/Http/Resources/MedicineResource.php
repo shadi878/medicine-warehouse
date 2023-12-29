@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Models\Favorite;
 use App\Models\User;
+use App\Traits\Imagefile;
 use App\Traits\ReturnDataName;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class MedicineResource extends JsonResource
 {
-    use ReturnDataName;
+    use ReturnDataName , Imagefile;
     /**
      * Transform the resource into an array.
      *
@@ -33,6 +34,7 @@ class MedicineResource extends JsonResource
         }
         $data['warehouse'] = $this->WarehouseName($data['warehouse_id']);
         $data['category'] = $this->CategoryName($data['category_id']);
+        $data['image'] = $this->GetImage($data['image']);
         return $data ;
     }
 }

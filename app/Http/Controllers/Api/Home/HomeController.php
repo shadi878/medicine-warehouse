@@ -44,7 +44,8 @@ class HomeController extends Controller
 
     public function GetAllMedicine() : JsonResponse
     {
-       $medicine = new MedicineCollection(Medicine::all())  ;
+        //$med = Medicine::query()->paginate(2);
+       $medicine = new MedicineCollection(Medicine::query()->orderByDesc('created_at')->get())  ;
        return response()->json([
           'status' => 1 ,
           'data' => $medicine ,
@@ -57,9 +58,14 @@ class HomeController extends Controller
     {
         $text = $request['text'] ;
         $medicines = Medicine::query()->where('trade_name' , 'LIKE' , '%'.$text.'%')->get() ;
-        $data = new MedicineCollection($medicines) ;
+        $category = Category::query()->where('name' , 'LIKE' , '%'.$text.'%')->get();
 
-         return response()->json([
+        $med = new MedicineCollection($medicines) ;
+        $data = [
+            'medicine' => $med ,
+            'category' => $category,
+        ];
+        return response()->json([
             'status' => 1 ,
             'data' => $data ,
             'message' => 'result'  ,

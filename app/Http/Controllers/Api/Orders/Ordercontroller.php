@@ -85,8 +85,8 @@ class Ordercontroller extends Controller
        foreach ($warehouse_ids as $id){
            $orders[$count] =  Order::query()->create([
               'order_date' => now(),
-              'status' => Status::OrderSent ,
-              'payment_status' => PaymentStatus::UnPaid ,
+              'status' => Status::ReceivedIt->value ,
+              'payment_status' => PaymentStatus::UnPaid->value ,
               'user_id'  => $user['id'] ,
               'warehouse_id' =>  $id ,
            ]);
@@ -174,7 +174,7 @@ class Ordercontroller extends Controller
             $data[$count] = $med ;
             $count++;
         }
-        return $this->success([], 'your Order');
+        return $this->success($data, 'your Order');
 
     }
    public function deleteOrder(Request $request) : JsonResponse
@@ -185,11 +185,12 @@ class Ordercontroller extends Controller
            $message = 'invalid .. ';
            return $this->error([] , $message , 404);
        }
-       if($order['status'] == 'InPreparation'){
+       if($order['status'] == Status::InPreparation->value || $order['status'] == Status::OrderSent->value){
            //406 Not Acceptable :
-           $message = 'you can not delete your order when it in the (InPreparation) status' ;
+           $message = 'Not Acceptable' ;
            return $this->error([] ,$message  , 406) ;
        }
+
        $orderItems = OrderItem::query()->where('order_id' , '=' , $order['id'])->get() ;
        foreach ($orderItems as $orderItem){
            $orderItem->delete();

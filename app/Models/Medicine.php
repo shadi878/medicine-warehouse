@@ -21,6 +21,7 @@ class Medicine extends Model
         'warehouse_id',
         'category_id',
         'sold_out',
+        'image',
     ];
 
     protected $hidden = [
