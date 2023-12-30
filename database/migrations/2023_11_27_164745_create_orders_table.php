@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->dateTime('order_date');
             $table->string('status');
+            $table->integer('total_price');
             $table->string('payment_status');
             $table->foreignIdFor(User::class)->constrained();
             $table->foreignIdFor(Warehouse::class)->constrained();

@@ -26,9 +26,9 @@ class UserFactory extends Factory
             'phone_number' => '0996862715',
             'password' => static::$password ??= Hash::make('123321'),
             'role' => 'admin',
-            'warehouse_id' => NUll ,
-            'pharmacy_name' => Null ,
-            'image' => Null,
+            'warehouse_id' => 1 ,
+            'pharmacy_name' => '' ,
+            'image' => '',
         ];
     }
 
