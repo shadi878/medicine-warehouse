@@ -57,9 +57,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/delete/{DEL_ID}' , [Ordercontroller::class , 'deleteOrder']);
 
     //PdfUserController
-
+    Route::get('/UserOrderPdf' ,  [PdfUserController::class , 'generateUserPdf']);
 });
-Route::get('/UserOrderPdf' ,  [PdfUserController::class , 'generateUserPdf']);
+
 
 //Admin Rote :
 Route::post('/admin' ,[LoginController::class ,'Login' ]);

@@ -105,7 +105,6 @@ class CartController extends Controller
 
     }
 
-    //todo : WTF fix this please :
     public function EditCartItemQuantity(Request $request) : JsonResponse
     {
         $request->validate([

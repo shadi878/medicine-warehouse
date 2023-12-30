@@ -95,21 +95,23 @@ class Ordercontroller extends Controller
 
        foreach ($orders as $order) {
            $medicine_cnt = count($medicines) ;
+           $total_price = 0 ;
            while ($medicine_cnt--){
                   if($order['warehouse_id'] == $medicines[$medicine_cnt]['warehouse_id']) {
-                      OrderItem::query()->create([
+                      $orderItem = OrderItem::query()->create([
                            'order_id' => $order['id'] ,
                            'medicine_id' => $medicines[$medicine_cnt]['id'] ,
                            'price' => $medicines[$medicine_cnt]['price'],
                            'total_price'  => $medicines[$medicine_cnt]['price'] * $medicines[$medicine_cnt]['quantity'] ,
                            'quantity' => $medicines[$medicine_cnt]['quantity'] ,
                       ]) ;
+                      $total_price = $total_price +  $orderItem['total_price'] ;
                       $med_ =  Medicine::query()->where('id' , '='  , $medicines[$medicine_cnt]['id'])->first();
 
                       if(($med_['quantity_available']  - $medicines[$medicine_cnt]['quantity'] ) == 0 ){
                           $med_->update([
                               'quantity_available' => $med_['quantity_available'] - $medicines[$medicine_cnt]['quantity'],
-                              'sold_out' => 1,
+                              'sold_out' => true,
                           ]);
                       }else if(($med_['quantity_available'] - $medicines[$medicine_cnt]['quantity']) != 0 ){
                           $med_->update([
@@ -120,6 +122,9 @@ class Ordercontroller extends Controller
                   }
 
            }
+           $order->update([
+              'total_price' => $total_price ,
+           ]);
        }
 
       foreach ($cartItems as $item){

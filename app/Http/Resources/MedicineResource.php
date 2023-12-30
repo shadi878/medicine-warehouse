@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Cart;
+use App\Models\CartItem;
 use App\Models\Favorite;
 use App\Traits\ReturnDataName;
 use Illuminate\Http\Request;
@@ -32,6 +34,19 @@ class MedicineResource extends JsonResource
         }
         $data['warehouse'] = $this->WarehouseName($data['warehouse_id']);
         $data['category'] = $this->CategoryName($data['category_id']);
+
+        $cart = Cart::query()->where('user_id' ,'=' , $user['id'])->first();
+
+        $cartItems = CartItem::query()->where('cart_id' , '=' ,$cart['id'])
+            ->where('medicine_id' ,'=' , $data['id'])->first();
+
+        if($cartItems){
+            $data['quantity'] = $cartItems['quantity'] ;
+        }
+        else{
+            $data['quantity'] = 0 ;
+        }
+
         return $data ;
     }
 }

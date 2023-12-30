@@ -53,7 +53,7 @@ class CreateMedicine extends Controller
            'warehouse_id' => $admin['warehouse_id'],
            'category_id' => $category['id'],
            'quantity_for_sale' => $request['quantity_for_sale'],
-            'image' => null ,
+            'image' => '' ,
 
         ]);
 
