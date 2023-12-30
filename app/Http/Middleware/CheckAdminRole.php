@@ -22,7 +22,7 @@ class CheckAdminRole
                 'status' => 0 ,
                 'data' => [] ,
                 'message' => 'you dont have the access for this .....',
-            ]);
+            ] , 404);
         }
         return $next($request);
     }

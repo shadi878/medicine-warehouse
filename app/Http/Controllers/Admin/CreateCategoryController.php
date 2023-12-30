@@ -3,17 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MedicineCollection;
 use App\Models\Category;
-use App\Models\CategoryItem;
 use App\Models\Medicine;
-use App\Models\Warehouse;
+use App\Traits\HttpResponses;
+use App\Traits\ReturnDataName;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Psy\Util\Json;
+
 
 class CreateCategoryController extends Controller
 {
+    use HttpResponses , ReturnDataName ;
 
     public function __construct(){
         $this->middleware('Admin_Role') ;
@@ -24,61 +25,69 @@ class CreateCategoryController extends Controller
              'name' => 'required' ,
              'image' => 'image|mimes:png,jpg,jpeg|max:2048',
          ]);
-         $warehouse = Auth::user() ;
+         $admin = $request->user() ;
 
-        $imageName = time() . '.' . $request['image']->extension();
-        $request['image']->storeAs('images', $imageName);
+         $category = Category::query()->where('name' , '=' , $request['name'])->first() ;
+         if($category){
+             $message = 'category it is already exits';
+             return $this->error([] , $message , 400);
+         }
+
+//        $imageName = time() . '.' . $request['image']->extension();
+//        $request['image']->storeAs('images', $imageName);
 
         $category =  Category::query()->create([
              'name' => $request['name'],
-             'warehouse_id' => $warehouse['warehouse_id'],
-             'image' => $imageName ,
+             'warehouse_id' => $admin['warehouse_id'],
+             'image' => 'new_test.png' ,
          ]);
 
-         return response()->json([
-            'status' => 1 ,
-            'data' =>  $category ,
-            'message' => 'category has been created successfully' ,
-         ]);
+        $message = 'category has been created successfully' ;
+         return $this->success($category , $message);
 
     }
 
-    public function showCategory() : JsonResponse
+    public function showCategory(Request $request) : JsonResponse
     {
-        $warehouse = Auth::user() ;
-        $category = Category::query()->where('warehouse_id' , '=' , $warehouse['warehouse_id'])->get() ;
+        $admin = $request->user() ;
+        $categories = Category::query()->where('warehouse_id' , '=' , $admin['warehouse_id'])->get() ;
 
-        return response()->json([
-            'status' => 1 ,
-            'data' => $category ,
-            'message' => 'all category'
-        ]);
-    }
-
-    public function showCategoryItem($id) : JsonResponse
-    {
-
-        $data = [] ;
-        $medicines = Medicine::all() ;
-
-        if($id < 0 || $id > count($medicines)){
-            return response()->json([
-                'status' => 0 ,
-                'data' => [] ,
-                'message' => 'invalid ID '
-            ]);
-        }
         $count = 0 ;
-        foreach ($medicines as $medicine){
-            if($medicine['category_id'] == $id){
-                $data[$count] = $medicine ;
-                $count += 1 ;
-            }
+        foreach ($categories as $category){
+            $categories[$count]['warehouse'] = $this->WarehouseName($category['warehouse_id']);
+            $count++;
         }
-        return response()->json([
-           'status' => 1 ,
-           'data' => $data ,
-           'message' => 'all the Item for the category with id  : ' .$id ,
-        ]);
+
+        $message = 'all category' ;
+        return $this->success($categories , $message) ;
+    }
+
+    public function GetAllCategoryName(Request $request) : JsonResponse
+    {
+        $admin = $request->user();
+        $categories = Category::query()->where('warehouse_id' , '=' , $admin['warehouse_id'])->get();
+
+        $data  = [] ;
+        $count = 0 ;
+        foreach ($categories as $category){
+            $data[$count] = $category['name'];
+            $count++;
+        }
+        $message = 'all categories' ;
+        return $this->success($data , $message);
+    }
+
+    public function showCategoryItem(Request $request) : JsonResponse
+    {
+        $admin = $request->user();
+        $id = $request->route('id') ;
+        $medicines = Medicine::query()->where('category_id' , '=' , $id)->get() ;
+        if(count($medicines) == 0){
+            $message = 'there is no item' ;
+            return $this->error([] , $message , 404) ;
+        }
+        $message = 'all category item' ;
+        $data = new MedicineCollection($medicines);
+        return $this->success($data , $message);
     }
 }

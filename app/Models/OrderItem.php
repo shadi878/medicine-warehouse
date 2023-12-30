@@ -12,8 +12,16 @@ class OrderItem extends Model
 
     protected $fillable = [
        'quantity' ,
-       'price' ,
+        'price' ,
+        'total_price',
+        'order_id',
+        'medicine_id' ,
     ] ;
+
+    protected $hidden = [
+      'created_at',
+      'updated_at',
+    ];
 
     public function order() : BelongsTo{
         return $this->belongsTo(Order::class) ;

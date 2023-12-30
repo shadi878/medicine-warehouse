@@ -2,12 +2,15 @@
 
 namespace App\Http\Middleware;
 
+use App\Traits\HttpResponses;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckUserRole
+class CheckDatabaseConnection
 {
+    use HttpResponses ;
     /**
      * Handle an incoming request.
      *
@@ -15,15 +18,11 @@ class CheckUserRole
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->user();
-
-        if($user['role'] != 'user'){
-            return response()->json([
-                'status' => 0 ,
-                'data' => [] ,
-                'message' => 'you dont have the access for this .....',
-            ] , 404);
+        DB::connection()->getPdo();
+        if(DB::connection()->getDatabaseName()){
+            return $next($request);
+        }else{
+            return $this->error([] , "Could not find the database. Please check your configuration." , 500);
         }
-        return $next($request);
     }
 }

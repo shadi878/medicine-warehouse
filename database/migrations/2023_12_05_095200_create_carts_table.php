@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Category;
-use App\Models\Medicine;
+use App\Models\User;
+use App\Models\Warehouse;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,19 +13,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('category_items', function (Blueprint $table) {
+        Schema::create('carts', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Category::class)->constrained();
-            $table->foreignIdFor(Medicine::class)->constrained();
+            $table->foreignIdFor(User::class)->constrained();
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('category_items');
+        Schema::dropIfExists('carts');
     }
 };

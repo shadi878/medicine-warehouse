@@ -35,6 +35,8 @@ class User extends Model
         'password',
         'remember_token',
         'rule',
+        'created_at',
+        'updated_at',
     ];
 
     /**

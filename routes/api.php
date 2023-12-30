@@ -1,13 +1,17 @@
 <?php
 
+use App\Http\Controllers\Admin\CheckOrderController;
 use App\Http\Controllers\Admin\CreateCategoryController;
 use App\Http\Controllers\Admin\CreateMedicine;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Cart\CartController;
 use App\Http\Controllers\Api\Home\HomeController;
 use App\Http\Controllers\Api\Home\ProfileController;
+use App\Http\Controllers\Api\Orders\Ordercontroller;
+use App\Http\Controllers\PdfController;
+use App\Http\Controllers\PdfUserController;
 use App\Http\Controllers\test\testController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,38 +25,84 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-//user Route
+//user Route :
 Route::post('/register' ,[AuthController::class ,'Register' ]);
 Route::post('/login' ,[AuthController::class ,'Login' ]);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/logout' , [AuthController::class , 'logout']) ;
+
+    //HomeController :
+    Route::post('/search' , [HomeController::class , 'searchForMedicineName']);
     Route::get('/getCategory' , [HomeController::class , 'GetAllCategory']);
+    Route::get('/getCategory/{id}' , [HomeController::class , 'GetCategoryItem']) ;
     Route::get('/getMedicine' , [HomeController::class , 'GetAllMedicine']) ;
-    Route::get('/addFavorite/{ID}' , [ProfileController::class , 'addFavorite']) ;
+    Route::get('/getLastAddMedicine' ,[HomeController::class , 'GetLastAddMedicine']);
+
+
+    //ProfileController :
+    Route::get('/getUser' , [ProfileController::class , 'GetUserData']);
+    Route::post('/addFavorite' , [ProfileController::class , 'addFavorite']) ;
     Route::get('/getFavorite' , [ProfileController::class , 'GetFavorite']) ;
 
-});
+    //CartController :
+    Route::post('/addToCart' , [CartController::class , 'AddToCart']);
+    Route::get('/getCartItem' , [CartController::class , 'ShowCartItem']);
+    Route::post('/deleteCartItem' , [CartController::class , 'deleteCartItem']) ;
+    Route::post('/editCartItemQuantity' , [CartController::class , 'EditCartItemQuantity']);
 
-//we are going to make another middleware  for the Admin.
+    //OrderController :
+    Route::post('/order' , [Ordercontroller::class , 'OrderAllCartItem']) ;
+    Route::get('/getUserOrder' , [Ordercontroller::class , 'GetAllOrder']) ;
+    Route::get('/order/details/{ID}' , [Ordercontroller::class , 'GetOrderDetails']) ;
+    Route::delete('/delete/{DEL_ID}' , [Ordercontroller::class , 'deleteOrder']);
+
+    //PdfUserController
+
+});
+Route::get('/UserOrderPdf' ,  [PdfUserController::class , 'generateUserPdf']);
+
+//Admin Rote :
 Route::post('/admin' ,[LoginController::class ,'Login' ]);
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/create' , [CreateMedicine::class , 'create']) ;
-    Route::post('/delete' , [CreateMedicine::class , 'delete']) ;
-    Route::post('/edit' , [CreateMedicine::class , 'editQuantity']) ;
-    Route::get('/show' , [CreateCategoryController::class , 'showCategory']) ;
+    Route::get('/admin/logout' , [LoginController::class,'Logout']);
+    Route::post('/adminSearch' , [CreateMedicine::class , 'searchForMedicineCategoryName']);
+
+    //MedicineController :
+    Route::post('/createMedicine' , [CreateMedicine::class , 'create']) ;
+    Route::delete('/deleteMedicine/{med_id}' , [CreateMedicine::class , 'deleteMedicine']) ;
+    Route::get('/getAdminMedicine' , [CreateMedicine::class , 'GetMedicine']);
+    Route::post('/editQuantity' , [CreateMedicine::class , 'editQuantity']) ;
+    Route::post('/editPrice' , [CreateMedicine::class , 'editPrice']);
+
+    //CategoryController:
+    Route::get('/showCategory' , [CreateCategoryController::class , 'showCategory']) ;
+    Route::get('/showCategoryName' , [CreateCategoryController::class , 'GetAllCategoryName']) ;
     Route::post('/category' , [CreateCategoryController::class , 'createCategory']) ;
     Route::get('/category/{id}' , [CreateCategoryController::class , 'showCategoryItem']) ;
+
+    //CheckOrderController:
+    Route::get('/getOrder' , [CheckOrderController::class , 'GetAllWarehouseOrder']) ;
+    Route::get('/getOrder/{A_ID}' , [CheckOrderController::class , 'GetOrderDetails']) ;
+    Route::post('/orderPaid' , [CheckOrderController::class , 'ChangePaymentStatusToPaid']) ;
+    Route::post('/orderStatusPre' , [CheckOrderController::class , 'ChangeOrderStatusToInPreparation']) ;
+    Route::post('/orderStatusSent' , [CheckOrderController::class , 'ChangeOrderStatusToOrderSent']);
+
+    //pdfController :
+    Route::get('/pdf', [PdfController::class, 'generatePdf']);
+
 });
 
 
 
-//test api ::
+//test api :
 Route::middleware('auth:sanctum')->post('/data' , [testController::class , 'user_data']) ;
 Route::middleware('auth:sanctum')->post('/ware' , [testController::class , 'ware']) ;
 Route::middleware('auth:sanctum')->post('/med' , [testController::class , 'med']) ;
 Route::get('/del' , [testController::class , 'delete']) ;
+Route::get('/print' , [testController::class , 'print']) ;
+Route::middleware('auth:sanctum')->post('/test' , [testController::class , 'test']);
+Route::middleware('auth:sanctum')->get('/collection' , [testController::class , 'collection']);
+Route::get('/image' , [testController::class , 'GetImage']) ;
+Route::get('/check' , [testController::class , 'check']);
+Route::get('/email' , [testController::class , 'sendWelcomeEmail']);
 

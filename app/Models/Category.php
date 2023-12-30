@@ -17,6 +17,11 @@ class Category extends Model
       'warehouse_id' ,
     ];
 
+    protected $hidden = [
+      'created_at',
+      'updated_at',
+    ];
+
     public function warehouse() : BelongsTo {
         return $this->belongsTo(Warehouse::class);
     }
