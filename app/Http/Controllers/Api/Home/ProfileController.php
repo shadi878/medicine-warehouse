@@ -22,11 +22,11 @@ class ProfileController extends Controller
     {
         $userData = $request->user();
 
-        //$cart = Cart::query()->where('user_id' , '=' , $userData['id'])->first();
+        $cart = Cart::query()->where('user_id' , '=' , $userData['id'])->first();
 
         $data = [
             'user' => $userData ,
-//            'cart_id' => $cart['id'] ,
+            'cart_id' => $cart['id'] ,
         ] ;
 
         $message = 'profile data' ;
@@ -48,7 +48,7 @@ class ProfileController extends Controller
         if($favorite){
             $favorite->delete();
             $message = 'has been deleted successfully' ;
-            return $this->success([] , $message) ;
+            return $this->success(false , $message) ;
         }
 
         Favorite::query()->create([
@@ -57,7 +57,7 @@ class ProfileController extends Controller
         ]);
 
         $message = 'add successfully' ;
-        return $this->success([] ,$message) ;
+        return $this->success(true ,$message) ;
     }
 
     public function GetFavorite(Request $request): JsonResponse
@@ -85,25 +85,5 @@ class ProfileController extends Controller
 
     }
 
-//    public function DeleteFavorite(Request $request) : JsonResponse
-//    {
-//        $id = $request->route('ID') ;
-//        $user = $request->user() ;
-//        $medicine = Medicine::query()->where( 'id' ,'=' , $id)->first() ;
-//        if(!$medicine){
-//            $message = 'invalid .. :)' ;
-//            return $this->error([] , $message , 404);
-//        }
-//        $favorite = Favorite::query()->where('user_id' , '=' , $user['id'])->where('medicine_id' , '=' , $medicine['id'])->first();
-//        if(!$favorite){
-//            $message = 'it is already not exist' ;
-//            return $this->error([] , $message , 404) ;
-//        }
-//
-//        $favorite->delete();
-//        $message = 'has been deleted successfully' ;
-//        return $this->success([] , $message) ;
-//
-//    }
 }
 

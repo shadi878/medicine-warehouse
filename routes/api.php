@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\Cart\CartController;
 use App\Http\Controllers\Api\Home\HomeController;
 use App\Http\Controllers\Api\Home\ProfileController;
 use App\Http\Controllers\Api\Orders\Ordercontroller;
+use App\Http\Controllers\PdfController;
+use App\Http\Controllers\PdfUserController;
 use App\Http\Controllers\test\testController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,26 +36,30 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getCategory' , [HomeController::class , 'GetAllCategory']);
     Route::get('/getCategory/{id}' , [HomeController::class , 'GetCategoryItem']) ;
     Route::get('/getMedicine' , [HomeController::class , 'GetAllMedicine']) ;
+    Route::get('/getLastAddMedicine' ,[HomeController::class , 'GetLastAddMedicine']);
 
 
     //ProfileController :
     Route::get('/getUser' , [ProfileController::class , 'GetUserData']);
     Route::post('/addFavorite' , [ProfileController::class , 'addFavorite']) ;
     Route::get('/getFavorite' , [ProfileController::class , 'GetFavorite']) ;
-    Route::delete('/deleteFavorite/{ID}' , [ProfileController::class , 'DeleteFavorite']) ;
 
     //CartController :
     Route::post('/addToCart' , [CartController::class , 'AddToCart']);
     Route::get('/getCartItem' , [CartController::class , 'ShowCartItem']);
-    Route::delete('/deleteCartItem/{ID}' , [CartController::class , 'deleteCartItem']) ;
+    Route::post('/deleteCartItem' , [CartController::class , 'deleteCartItem']) ;
+    Route::post('/editCartItemQuantity' , [CartController::class , 'EditCartItemQuantity']);
 
     //OrderController :
     Route::post('/order' , [Ordercontroller::class , 'OrderAllCartItem']) ;
-    Route::get('/getOrder' , [Ordercontroller::class , 'GetAllOrder']) ;
+    Route::get('/getUserOrder' , [Ordercontroller::class , 'GetAllOrder']) ;
     Route::get('/order/details/{ID}' , [Ordercontroller::class , 'GetOrderDetails']) ;
     Route::delete('/delete/{DEL_ID}' , [Ordercontroller::class , 'deleteOrder']);
 
+    //PdfUserController
+
 });
+Route::get('/UserOrderPdf' ,  [PdfUserController::class , 'generateUserPdf']);
 
 //Admin Rote :
 Route::post('/admin' ,[LoginController::class ,'Login' ]);
@@ -80,6 +86,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orderPaid' , [CheckOrderController::class , 'ChangePaymentStatusToPaid']) ;
     Route::post('/orderStatusPre' , [CheckOrderController::class , 'ChangeOrderStatusToInPreparation']) ;
     Route::post('/orderStatusSent' , [CheckOrderController::class , 'ChangeOrderStatusToOrderSent']);
+
+    //pdfController :
+    Route::get('/pdf', [PdfController::class, 'generatePdf']);
 
 });
 

@@ -80,7 +80,7 @@ class CheckOrderController extends Controller
         if($order['payment_status'] == PaymentStatus::Paid->value)
         {
             $message = 'close Order';
-            return $this->error([] , $message , 200) ;
+            return $this->error([] , $message , 406) ;
         }
 
         if($order['status']  != Status::OrderSent->value)

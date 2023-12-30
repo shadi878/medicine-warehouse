@@ -46,13 +46,16 @@ class HomeController extends Controller
     {
         //$med = Medicine::query()->paginate(2);
        $medicine = new MedicineCollection(Medicine::query()->orderByDesc('created_at')->get())  ;
-       return response()->json([
-          'status' => 1 ,
-          'data' => $medicine ,
-          'message' => 'all medicines' ,
-       ]);
+       return $this->success($medicine , 'all medicine');
 
     }
+    public function GetLastAddMedicine(Request $request) : JsonResponse
+    {
+        $med = Medicine::query()->orderByDesc('created_at')->take(10)->get() ;
+         $medicine = new MedicineCollection($med);
+         return $this->success($medicine , 'last 10 add');
+    }
+
 
     public function searchForMedicineName(Request $request) : JsonResponse
     {

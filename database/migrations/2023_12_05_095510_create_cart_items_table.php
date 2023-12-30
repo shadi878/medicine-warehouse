@@ -11,6 +11,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    //TODO: take of the default value of the quantity .
     public function up(): void
     {
         Schema::create('cart_items', function (Blueprint $table) {

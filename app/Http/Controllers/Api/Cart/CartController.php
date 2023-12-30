@@ -7,7 +7,6 @@ use App\Http\Resources\MedicineCollection;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Medicine;
-use App\Models\Warehouse;
 use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,6 +21,7 @@ class CartController extends Controller
     {
         $request->validate([
            'medicine_id' => 'required' ,
+           'quantity' => 'integer',
         ]);
 
         $user = $request->user() ;
@@ -31,8 +31,16 @@ class CartController extends Controller
             $message = 'invalid';
             return $this->error([] , $message , 404) ;
         }
-
         $medicines = Medicine::query()->where('id' , '=' , $request['medicine_id'])->first();
+
+        if($request['quantity'] > $medicines['quantity_available']){
+            $message = 'the quantity you want it is not available now ' ;
+            return $this->error([] , $message , 406) ;
+        }
+        else if($request['quantity'] > $medicines['quantity_for_sale']){
+            $message = 'the quantity you want it is not available now' ;
+            return $this->error([] , $message , 406) ;
+        }
 
         $cart = Cart::query()->where('user_id' , '=' , $user['id'])->first();
 
@@ -40,12 +48,22 @@ class CartController extends Controller
                                      ->where('medicine_id' , '=' , $medicines['id']);
         if($cartItem->exists()){
             $message = 'you have already added it ' ;
+            $cartItem = CartItem::query()->where('cart_id' , '=' , $cart['id'])
+                                         ->where('medicine_id' , '=' , $medicines['id'])->first();
+            if($cartItem['quantity'] != $request['quantity']){
+                CartItem::query()->where('id' , '=' , $cartItem['id'])->update([
+                    'quantity' => $request['quantity'],
+                ]);
+                $message = 'updated successfully';
+                return $this->success([] , $message);
+            }
             return $this->error([] , $message , 400);
         }
 
-        $cartItem = CartItem::query()->create([
+        CartItem::query()->create([
            'cart_id' => $cart['id']  ,
            'medicine_id' => $medicines['id'],
+           'quantity' => $request['quantity'] ,
         ]);
 
         $message  = 'add successfully' ;
@@ -54,7 +72,7 @@ class CartController extends Controller
 
     }
 
-    public function ShowCartItem(Request $request)
+    public function ShowCartItem(Request $request) : JsonResponse
     {
 
         $user = $request->user() ;
@@ -68,7 +86,7 @@ class CartController extends Controller
 
         if(count($cartItems) == 0){
             $message = 'empty cart';
-            return $this->error([] , $message , 400);
+            return $this->success([] , $message ,);
         }
         $medicines = [] ;
         $count = 0 ;
@@ -91,54 +109,41 @@ class CartController extends Controller
     public function EditCartItemQuantity(Request $request) : JsonResponse
     {
         $request->validate([
-           'warehouse_id' => 'required' ,
-           'medicine_id' => 'required' ,
-           'quantity' => 'required' ,
+           'cartItem_id' => 'required',
+           'quantity' => 'required|integer' ,
         ]);
 
         $user = $request->user() ;
 
-        $warehouse = Warehouse::query()->where('id' , '=' , $request['warehouse_id'])->first() ;
-        if(!$warehouse){
-            return response()->json([
-                'status' => 0 ,
-                'data' => [] ,
-                'message' => 'invalid warehouse_id :)',
-            ]) ;
-        }
         $cart = Cart::query()->where('user_id' , '=' , $user['id']) ;
-
-        $cartItem = CartItem::query()->where('cart_id' , '=' , $cart['id'])
-                              ->where('medicine_id' , '=' , $request['medicine_id']);
+        if(!$cart){
+            return $this->error([] , 'not found' ,404);
+        }
+        $cartItem = CartItem::query()->where('id' , '=' , $request['cartItem_id'])->first();
 
         if(!$cartItem){
-            return response()->json([
-                'status' => 0 ,
-                'data' => [] ,
-                'message' => 'invalid cartItem :)',
-            ]) ;
+            return $this->error([] , 'invalid cartItem  ID :)' , 404);
         }
-        $medicine = Medicine::query()->where('id' , '=' , $request['medicine_id'])->first();
+
+        $medicine = Medicine::query()->where('id' , '=' , $cartItem['medicine_id'])->first();
         $quantity = $medicine['quantity_available'] ;
+        $quantity_for_sale = $medicine['quantity_for_sale'];
 
         if($quantity < $request['quantity']){
-            return response()->json([
-                'status' => 0 ,
-                'data' => [] ,
-                'message' => 'the available quantity is : ' . $quantity,
-            ]) ;
+            $message = 'the available quantity is : ' . $quantity ;
+            return $this->error([] , $message , 406);
+        }
+        else if ($quantity_for_sale < $request['quantity']){
+            $message = 'the available quantity for sale is : ' . $quantity_for_sale ;
+            return $this->error([] , $message , 406);
         }
 
-        $cartItem->update([
+        CartItem::query()->where('id' , '=' , $request['cartItem_id'])->update([
            'quantity' => $request['quantity'],
-           'total_price' => $request['quantity'] * $medicine['price'] ,
         ]);
+        $cartItem  = CartItem::query()->where('id' , '=' , $request['cartItem_id'])->first() ;
 
-        return response()->json([
-           'status' => 1 ,
-           'data' => $cartItem,
-           'message' => 'updated successfully' ,
-        ]);
+        return $this->success($cartItem , 'updated successfully');
     }
 
 
@@ -146,7 +151,7 @@ class CartController extends Controller
     {
         $user = $request->user() ;
         //cartItem_id ;
-        $id = $request->route('ID');
+        $id = $request['cartItem_id'];
         $cart = Cart::query()->where('user_id' , '=' , $user['id'])->first();
         $cartItem = CartItem::query()->where('id' , '=' , $id)->first();
 
