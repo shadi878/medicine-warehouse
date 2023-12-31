@@ -88,6 +88,7 @@ class Ordercontroller extends Controller
               'status' => Status::ReceivedIt->value ,
               'payment_status' => PaymentStatus::UnPaid->value ,
               'user_id'  => $user['id'] ,
+              'total_price' => 0 ,
               'warehouse_id' =>  $id ,
            ]);
            $count++ ;

@@ -13,9 +13,10 @@ class PdfController extends Controller
 {
     public function generatePdf(Request $request)
     {
-        $admin = $request->user() ;
+        $id = $request->route('AD_ID');
+        $id = intval($id) ;
         // Fetch orders with related items
-        $orders = Order::query()->where('warehouse_id' , '=' , $admin['warehouse_id'])->get();
+        $orders = Order::query()->where('warehouse_id' , '=' , $id)->get();
         foreach ($orders as $order){
             $cartItem = OrderItem::query()->where('order_id' , '=' , $order['id'])->get();
             $user = User::query()->where('id' , '=' , $order['user_id'])->first();

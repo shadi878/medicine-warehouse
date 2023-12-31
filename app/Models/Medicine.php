@@ -14,6 +14,7 @@ class Medicine extends Model
         'scientific_name',
         'trade_name',
         'quantity_available',
+        'quantity_for_sale',
         'price',
         'company',
         'quantity',

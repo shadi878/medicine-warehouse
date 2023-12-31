@@ -87,7 +87,10 @@ class CreateCategoryController extends Controller
             return $this->error([] , $message , 404) ;
         }
         $message = 'all category item' ;
-        $data = new MedicineCollection($medicines);
-        return $this->success($data , $message);
+        foreach ($medicines as $med){
+            $med['warehouse'] = $this->WarehouseName($med['warehouse_id']);
+            $med['category'] = $this->CategoryName($med['category_id']);
+        }
+        return $this->success($medicines , $message);
     }
 }

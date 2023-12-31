@@ -94,4 +94,11 @@ class testController extends Controller
           }
       }
 
+
+      public function test_pdf(Request $request){
+         $id =  $request->route('USER');
+         $id = intval($id) ;
+       var_dump($id) ;
+      }
+
     }

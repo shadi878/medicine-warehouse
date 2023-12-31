@@ -63,6 +63,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //Admin Rote :
 Route::post('/admin' ,[LoginController::class ,'Login' ]);
+Route::get('/pdf/{AD_ID}', [PdfController::class, 'generatePdf']);
+//Route::get('/xxx/{USER}', [testController::class, 'test_pdf']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/logout' , [LoginController::class,'Logout']);
     Route::post('/adminSearch' , [CreateMedicine::class , 'searchForMedicineCategoryName']);
@@ -87,8 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orderStatusPre' , [CheckOrderController::class , 'ChangeOrderStatusToInPreparation']) ;
     Route::post('/orderStatusSent' , [CheckOrderController::class , 'ChangeOrderStatusToOrderSent']);
 
-    //pdfController :
-    Route::get('/pdf', [PdfController::class, 'generatePdf']);
+
 
 });
 
@@ -105,4 +107,8 @@ Route::middleware('auth:sanctum')->get('/collection' , [testController::class , 
 Route::get('/image' , [testController::class , 'GetImage']) ;
 Route::get('/check' , [testController::class , 'check']);
 Route::get('/email' , [testController::class , 'sendWelcomeEmail']);
+
+
+//Route::get('/pdf', [PdfController::class, 'generatePdf']);
+
 

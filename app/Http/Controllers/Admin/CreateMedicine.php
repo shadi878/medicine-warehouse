@@ -101,10 +101,14 @@ class CreateMedicine extends Controller
        $med->update([
              'quantity_available' => $request['quantity']
           ]);
-        $med = Medicine::query()->where('id' , '=' , $request['medicine_id'])->get();
+
         $message = ' has been updated successfully ' ;
-        $data = new MedicineCollection($med) ;
-        return $this->success($data, $message);
+        $medicines = Medicine::query()->where('id' , '=' , $request['medicine_id'])->get();
+        foreach ($medicines as $med){
+            $med['warehouse'] = $this->WarehouseName($med['warehouse_id']);
+            $med['category'] = $this->CategoryName($med['category_id']);
+        }
+        return $this->success($medicines, $message);
     }
 
     public function editPrice(Request $request) : JsonResponse
@@ -121,10 +125,13 @@ class CreateMedicine extends Controller
         $med->update([
             'price' => $request['price'],
         ]);
-        $med = Medicine::query()->where('id' , '=' , $request['medicine_id'])->get();
+        $medicines = Medicine::query()->where('id' , '=' , $request['medicine_id'])->get();
+         foreach ($medicines as $med){
+             $med['warehouse'] = $this->WarehouseName($med['warehouse_id']);
+             $med['category'] = $this->CategoryName($med['category_id']);
+         }
         $message = 'has been updated successfully ' ;
-        $data = new MedicineCollection($med) ;
-        return $this->success($data, $message);
+        return $this->success($medicines, $message);
     }
 
     public function GetMedicine(Request $request) : JsonResponse
@@ -136,9 +143,13 @@ class CreateMedicine extends Controller
             $message = 'empty';
             return $this->error([] , $message , 404);
         }
-        $data = new MedicineCollection($medicines);
+        foreach ($medicines as $medicine){
+            $medicine['warehouse'] = $this->WarehouseName($medicine['warehouse_id']);
+            $medicine['category'] = $this->CategoryName($medicine['category_id']);
+        }
+
         $message = 'all medicine';
-        return $this->success($data , $message);
+        return $this->success($medicines , $message);
 
     }
 
@@ -154,9 +165,12 @@ class CreateMedicine extends Controller
         $category = Category::query()->where('warehouse_id' , '=' , $admin['warehouse_id']);
         $category = $category->where('name' , 'LIKE' , '%'.$text.'%')->get();
 
-        $med = new MedicineCollection($medicines) ;
+        foreach ($medicines as $med){
+            $med['warehouse'] = $this->WarehouseName($med['warehouse_id']);
+            $med['category'] = $this->CategoryName($med['category_id']);
+        }
         $data = [
-            'medicine' => $med ,
+            'medicine' => $medicines ,
             'category' => $category,
         ];
 
